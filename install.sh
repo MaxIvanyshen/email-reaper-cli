@@ -8,11 +8,6 @@ echo 'Currently LATEST_RELEASE:' $version;
 wget -N http://chromedriver.storage.googleapis.com/${version}/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip -d /usr/local/bin
 chmod a+x /usr/local/bin/chromedriver
-#upgrade to latest google chrome 
-yum upgrade google-chrome-stable
-google_version=`google-chrome --version`;
-echo 'Google Chrome Version:' $google_version;
-echo 'Currently LATEST_RELEASE:' $version;
 echo 'Chromedriver installed'
 
 ##### INSTALL RUST #####
