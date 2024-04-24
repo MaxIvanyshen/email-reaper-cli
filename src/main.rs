@@ -1,6 +1,8 @@
 use clap::Parser;
 use thirtyfour::prelude::*;
 use std::collections::{HashMap, HashSet};
+use std::process::Command;
+use std::thread;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -82,9 +84,12 @@ impl Reaper {
 
 #[tokio::main]
 async fn main() -> WebDriverResult<()> {
+    start_webdriver();
     let mut caps = DesiredCapabilities::chrome();
     let _ = caps.add_arg("--headless");
     let driver = WebDriver::new("http://localhost:9515", caps).await?;
+
+    println!("");
 
     let args = Args::parse();
     let reaper = Reaper::new(driver.clone());    
@@ -147,4 +152,10 @@ fn write_to_csv(map: HashMap<String, HashSet<String>>, filename: String) -> Resu
         writer.flush()?;
     }
     Ok(())
+}
+
+fn start_webdriver() {
+   Command::new("chromedriver")
+       .spawn()
+       .expect("process failed to execute"); 
 }
