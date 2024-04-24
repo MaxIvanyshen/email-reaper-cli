@@ -68,7 +68,11 @@ impl Reaper {
     }
 
     async fn reap_emails(&self, link: &str) -> Result<HashSet<String>, WebDriverError> {
-        let response = reqwest::get(link).await?;
+        let response: reqwest::Response; 
+        match reqwest::get(link).await {
+            Ok(res) => response = res,
+            Err(_) => return Ok(HashSet::new()),
+        }
         let html_content = response.text().await?;
         let re = regex::Regex::new(r"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})").unwrap();
         let mut emails = HashSet::new();
