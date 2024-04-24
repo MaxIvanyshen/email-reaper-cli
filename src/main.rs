@@ -157,7 +157,7 @@ fn write_to_json(map: HashMap<String, HashSet<String>>, filename: String) -> Res
             link: link,
             emails: email_set.iter().map(|x| x.to_string()).collect::<Vec<String>>()
         };
-        println!("{}", json.dump());
+
         file.write_all(json.dump().as_bytes())?;
         if count != length {
             file.write_all(b",")?;
