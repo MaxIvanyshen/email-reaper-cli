@@ -2,7 +2,6 @@ use clap::Parser;
 use thirtyfour::prelude::*;
 use std::collections::{HashMap, HashSet};
 use std::process::Command;
-use std::thread;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -89,13 +88,11 @@ async fn main() -> WebDriverResult<()> {
     let _ = caps.add_arg("--headless");
     let driver = WebDriver::new("http://localhost:9515", caps).await?;
 
-    println!("");
-
     let args = Args::parse();
     let reaper = Reaper::new(driver.clone());    
 
     let mut links = vec![];
-    println!("Parsing links from pages {}-{}....", args.start_page, args.end_page);
+    println!("\nParsing links from pages {}-{}....", args.start_page, args.end_page);
     for page in args.start_page..args.end_page+1 {
         reaper.connect_to_page(&args.url, page).await?;
         reaper.reap_links().await?.iter().for_each(|link| {
@@ -108,8 +105,9 @@ async fn main() -> WebDriverResult<()> {
     let mut map: HashMap<String, HashSet<String>> = HashMap::new();
 
     for (i, link) in links.iter().enumerate() {
-        println!("Parsing emails from {}({}/{})...", link, i + 1, links.len());
-        let mut emails = reaper.reap_emails(&link).await?;
+        println!("({}/{}) Parsing emails from {}...", i + 1, links.len(), link);
+
+        let mut emails = reaper.reap_emails(link).await?;
         reaper.reap_emails(&format!("{link}/contact")).await?.iter().for_each(|email| {
             emails.insert(email.clone());
         });
