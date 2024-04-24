@@ -15,14 +15,11 @@ struct Args {
     #[arg(short, long = "end", default_value_t = 1)]
     end_page: u32,
 
-    #[arg(short, long)]
-    csv: bool,
+    #[arg(short, long = "csv", default_value = "")]
+    csv_filename: String,
 
-    #[arg(short, long)]
-    json: bool,
-
-    #[arg(short, long = "file", default_value = "emails")]
-    file_name: String,
+    #[arg(short, long = "json", default_value = "")]
+    json_filename: String,
 }
 
 struct Reaper {
@@ -117,13 +114,10 @@ async fn main() -> WebDriverResult<()> {
         map.insert(link.to_string(), emails);
     }
 
-    if args.csv && args.json {
+    if args.csv_filename != "" {
         write_to_csv(map.clone(), args.file_name).unwrap();
-        //TODO: add ability to construct json object
-    }
-    else if args.csv {
-        write_to_csv(map.clone(), args.file_name).unwrap();
-    } else if args.json {
+    } 
+    if args.json_filename != "" {
         //TODO: add ability to construct json object
     }
     else {
