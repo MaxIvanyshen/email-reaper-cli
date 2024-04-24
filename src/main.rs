@@ -1,10 +1,11 @@
 use clap::Parser;
+use json::object;
 use thirtyfour::prelude::*;
 use std::collections::{HashMap, HashSet};
 use std::process::Command;
+use std::io::Write; 
 
-#[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
+#[derive(Parser, Debug)] #[command(version, about, long_about = None)]
 struct Args {
     #[arg(short, long)]
     url: String,
@@ -115,10 +116,10 @@ async fn main() -> WebDriverResult<()> {
     }
 
     if args.csv_filename != "" {
-        write_to_csv(map.clone(), args.file_name).unwrap();
+        write_to_csv(map.clone(), args.csv_filename).unwrap();
     } 
     if args.json_filename != "" {
-        //TODO: add ability to construct json object
+        write_to_json(map.clone(), args.json_filename).unwrap();
     }
     else {
         for (_, email_set) in map {
@@ -128,12 +129,11 @@ async fn main() -> WebDriverResult<()> {
         }   
     }
 
-
     Ok(())
 }
 
 fn write_to_csv(map: HashMap<String, HashSet<String>>, filename: String) -> Result<(), csv::Error> {
-    let mut writer = csv::Writer::from_path(filename + ".csv")?;
+    let mut writer = csv::Writer::from_path(filename)?;
     for (link, email_set) in map {
         writer.write_record(&[
                             link,
@@ -143,6 +143,27 @@ fn write_to_csv(map: HashMap<String, HashSet<String>>, filename: String) -> Resu
         ])?;
         writer.flush()?;
     }
+    Ok(())
+}
+
+fn write_to_json(map: HashMap<String, HashSet<String>>, filename: String) -> Result<(), std::io::Error> {
+    let mut file = std::fs::File::create(filename)?;
+    file.write_all(b"[")?;
+    let mut count = 0;
+    let length = map.len();
+    for (link, email_set) in map {
+        count += 1;
+        let json = object! {
+            link: link,
+            emails: email_set.iter().map(|x| x.to_string()).collect::<Vec<String>>()
+        };
+        println!("{}", json.dump());
+        file.write_all(json.dump().as_bytes())?;
+        if count != length {
+            file.write_all(b",")?;
+        }
+    }
+    file.write_all(b"]")?;
     Ok(())
 }
 
