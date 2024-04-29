@@ -7,7 +7,9 @@ CLI tool for grabbing websites from google search results like https://bit.ly/3Q
 - Install chromedriver on your machine
 - Run the application like `reaper --url https://bit.ly/3QetS9S --start 1 --end 2`
 
-### Additional args
+### Parameters
+- `start` - REQUIRED PARAM - starting page of parsing website addresses
+- `end` - REQUIRED PARAM - ending page of parsing website addresses
 - `csv` - specify a path to .csv file you want to save found emails. Data will be saved as website emails where found at and up to 3 emails. Exmaple: `website address,email1,email2,email3`
 - `json` - specify a path to .json file you want to save found emails. Data wil be saved as an array of json objects that contain website emails where found at and an array of emails.
 
