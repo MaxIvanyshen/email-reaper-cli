@@ -4,6 +4,8 @@ use thirtyfour::prelude::*;
 use std::collections::{HashMap, HashSet};
 use std::process::Command;
 use std::io::Write; 
+use std::time::Duration;
+use std::thread;
 
 #[derive(Parser, Debug)] #[command(version, about, long_about = None)]
 struct Args {
@@ -86,6 +88,7 @@ impl Reaper {
 #[tokio::main]
 async fn main() -> WebDriverResult<()> {
     start_webdriver();
+    thread::sleep(Duration::from_secs(1));
     let mut caps = DesiredCapabilities::chrome();
     let _ = caps.add_arg("--headless");
     let driver = WebDriver::new("http://localhost:9515", caps).await?;
